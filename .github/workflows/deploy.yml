@@ -10,16 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
+      # Step 2: Build and push Docker image to Docker Hub
       - name: Build and push Docker image to Docker Hub
         run: |
-          docker build . -t YOUR_USER/myproject
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u  YOUR_USER --password-stdin
-          docker push YOUR_USER/myproject
+          docker build . -t sabrinadev/myproject
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u DOCKER_USER --password-stdin
+          docker push DOCKER_USER /myproject
 
+      # Step 3: Deploy to AWS EC2
       - name: Deploy to AWS EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@98.80.250.179 'docker pull YOUR_USER/myproject && docker-compose up -d'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@98.80.250.179 'docker pullDOCKER_USERsabrinadev/myproject && docker-compose up -d'
+
 
