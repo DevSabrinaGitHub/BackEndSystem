@@ -1,4 +1,4 @@
-name: Despliegue Django
+name: Deploy to AWS EC2
 
 on:
   push:
@@ -6,33 +6,20 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Descargar código
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Configurar Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.12'
+      - name: Build and push Docker image to Docker Hub
+        run: |
+          docker build . -t YOUR_USER/myproject
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u  YOUR_USER --password-stdin
+          docker push YOUR_USER/myproject
 
-    - name: Instalar dependencias
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Deploy to AWS EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@98.80.250.179 'docker pull YOUR_USER/myproject && docker-compose up -d'
 
-    - name: Ejecutar pruebas
-      run: |
-        python manage.py test
-
-    - name: Construir y subir imagen Docker a Docker Hub
-      run: |
-        docker build . -t sabrinadev/myproject
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u <tu-usuario-dockerhub> --password-stdin
-        docker push <tu-usuario-dockerhub>/myproject
-
-    - name: Desplegar en AWS EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@<tu_ip_ec2> 'docker pull <tu-usuario-dockerhub>/myproject && docker-compose up -d'
