@@ -79,16 +79,30 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 import os
 
+
+#DATABASES = {
+   # 'default': {
+      #  'ENGINE': 'django.db.backends.postgresql',
+       # 'NAME': os.getenv('POSTGRES_DB', 'mydb'),
+       # 'USER': os.getenv('POSTGRES_USER', 'postgres'),
+      #  'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'rahel'),
+     #   'HOST': os.getenv('POSTGRES_HOST', 'db'),  
+      #  'PORT': os.getenv('POSTGRES_PORT', '5432'),
+    #}
+#}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'mydb'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'rahel'),
-        'HOST': os.getenv('POSTGRES_HOST', 'db'),  
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'backendtask'),
+        'HOST': os.getenv('POSTGRES_HOST', 'mydb.cfw28262snzt.us-east-1.rds.amazonaws.com'),  
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
+
+
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
 

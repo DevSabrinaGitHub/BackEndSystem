@@ -5,54 +5,54 @@ from datetime import timedelta
 from myapp.models import StockData, Prediction
 import os
 
-# Ruta del archivo del modelo
+# file path
 MODEL_FILE = os.path.join(os.path.dirname(__file__), 'model.pkl')
 
 def train_model(symbol):
-    """Entrena un modelo de regresión lineal basado en los datos históricos del símbolo proporcionado."""
-    # Obtener datos históricos de la base de datos
+    """Train a linear regression model based on historical data for the provided symbol."""
+    # get historical date from DB
     historical_data = StockData.objects.filter(symbol=symbol).order_by('timestamp')
 
     if not historical_data.exists():
-        raise ValueError(f"No se encontraron datos históricos para el símbolo {symbol}")
+        raise ValueError(f"No historical data found for the symbol {symbol}")
 
-    # Preparar los datos para el entrenamiento
-    X = np.array([i for i in range(len(historical_data))]).reshape(-1, 1)  # Índices como entrada
-    y = np.array([data.close_price for data in historical_data])  # Precios de cierre como salida
+    # preparing data
+    X = np.array([i for i in range(len(historical_data))]).reshape(-1, 1)  
+    y = np.array([data.close_price for data in historical_data])  
 
     model = LinearRegression()
     model.fit(X, y)
 
-    # Guardar el modelo entrenado
+    # save model
     with open(MODEL_FILE, 'wb') as f:
         pickle.dump(model, f)
 
-    print(f"Modelo entrenado y guardado para el símbolo {symbol}")
+    print(f"Trained and saved model for symbol {symbol}")
 
 def load_model():
-    """Carga el modelo entrenado desde un archivo."""
+    """Load the trained model from a file."""
     if os.path.exists(MODEL_FILE):
         with open(MODEL_FILE, 'rb') as f:
             model = pickle.load(f)
         return model
     else:
-        raise FileNotFoundError(f"El archivo del modelo no se encuentra en {MODEL_FILE}")
+        raise FileNotFoundError(f"The model file is not located in {MODEL_FILE}")
 
 def predict_next_30_days(symbol):
-    """Usa el modelo de regresión lineal para predecir los próximos 30 días de un símbolo dado."""
-    # Obtener datos históricos
+    """Use the linear regression model to predict the next 30 days of a given symbol."""
+    # get hisorical data
     historical_data = StockData.objects.filter(symbol=symbol).order_by('timestamp')
 
     if not historical_data.exists():
-        raise ValueError(f"No se encontraron datos históricos para el símbolo {symbol}")
+        raise ValueError(f"No historical data found for the symbol {symbol}")
 
-    # Cargar el modelo pre-entrenado
+    # Loading the pre-trained model
     model = load_model()
 
-    # Preparar los datos de entrada
+    #preparing model
     X = np.array([i for i in range(len(historical_data))]).reshape(-1, 1)
 
-    # Predecir los próximos 30 días
+    # # Predict the next 30 days
     predictions = []
     last_day_index = len(historical_data) - 1
     last_timestamp = historical_data.last().timestamp
@@ -60,7 +60,7 @@ def predict_next_30_days(symbol):
         next_day = last_day_index + i
         predicted_price = model.predict(np.array([[next_day]]))[0]
 
-        # Guardar la predicción en la base de datos
+        # Saving the prediction to the database
         prediction = Prediction.objects.create(
             symbol=symbol,
             date=last_timestamp + timedelta(days=i),

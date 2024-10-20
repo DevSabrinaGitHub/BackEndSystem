@@ -11,7 +11,7 @@ class Command(BaseCommand):
         symbol = kwargs['symbol']
         self.stdout.write(f"Training machine learning model for {symbol}...")
 
-        # Llama a la función para entrenar el modelo
+        # function for the model
         train_model(symbol)
 
         self.stdout.write(self.style.SUCCESS(f"Model trained successfully for {symbol}."))

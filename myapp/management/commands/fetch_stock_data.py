@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         symbol = options['symbol'].upper()
-        api_key = 'TU_CLAVE_API'  # Reemplaza esto con tu clave de API de Alpha Vantage
+        api_key = 'DYIVABL5P6CM8OCQ'  
         function = 'TIME_SERIES_DAILY'
         url = (
             f'https://www.alphavantage.co/query?function={function}'
@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
             # Manejar límite de tasas de la API
             if 'Note' in data:
-                self.stdout.write(self.style.WARNING('Límite de la API alcanzado. Esperando 60 segundos.'))
+                self.stdout.write(self.style.WARNING('API limit reached. Waiting 60 seconds.'))
                 time.sleep(60)
                 response = requests.get(url)
                 data = response.json()
@@ -62,9 +62,9 @@ class Command(BaseCommand):
                     records_created += 1
 
             self.stdout.write(self.style.SUCCESS(
-                f"Datos obtenidos y almacenados correctamente para {symbol}. Registros creados: {records_created}"
+                f"Data obtained and stored correctly for {symbol}. Records created: {records_created}"
             ))
         except requests.exceptions.RequestException as e:
             raise CommandError(f"Error de red: {e}")
         except Exception as e:
-            raise CommandError(f"Ocurrió un error: {e}")
+            raise CommandError(f"error: {e}")

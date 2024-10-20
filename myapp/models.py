@@ -26,11 +26,11 @@ from django.db import models
 class StockData(models.Model):
     symbol = models.CharField(max_length=10)
     timestamp = models.DateTimeField()
-    open_price = models.FloatField(null=True, blank=True)  # Permitir nulos
-    close_price = models.FloatField(null=True, blank=True)  # Permitir nulos
-    high_price = models.FloatField(null=True, blank=True)   # Permitir nulos
-    low_price = models.FloatField(null=True, blank=True)    # Permitir nulos
-    volume = models.BigIntegerField(null=True, blank=True)  # Permitir nulos
+    open_price = models.FloatField(null=True, blank=True)  
+    close_price = models.FloatField(null=True, blank=True)  
+    high_price = models.FloatField(null=True, blank=True)   
+    low_price = models.FloatField(null=True, blank=True)    
+    volume = models.BigIntegerField(null=True, blank=True)  
 
     def __str__(self):
         return f'{self.symbol} - {self.timestamp}'

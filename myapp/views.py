@@ -12,26 +12,26 @@ from myapp.ml_model import train_model, predict_next_30_days
 from .models import Prediction
 
 
-# Función para calcular el promedio móvil
+# Function to calculate the moving average
 def calculate_moving_average(prices, window_size):
     return sum(prices[-window_size:]) / window_size if len(prices) >= window_size else None
 
 
-# Vista para realizar el backtesting con mejoras
+# View to perform backtesting with enhancements
 def backtest(request, symbol, initial_investment):
     stock_data = StockData.objects.filter(symbol=symbol).order_by('timestamp')
 
     if not stock_data.exists():
-        return HttpResponse(f"No se encontraron datos para el símbolo {symbol}.", content_type="text/plain")
+        return HttpResponse(f"No data found for the symbol {symbol}.", content_type="text/plain")
 
     balance = initial_investment
-    holdings = 0  # Número de acciones en posesión
+    holdings = 0  # Number of shares held
     trade_count = 0
-    initial_price = stock_data.first().close_price  # Precio inicial para calcular ROI
+    initial_price = stock_data.first().close_price  # initial price to calculate ROI
 
     close_prices = [data.close_price for data in stock_data]
 
-    # Variable para evitar comprar y vender inmediatamente después
+    # Variable to avoid buying and selling immediately afterwards
     can_trade = True
     last_trade_action = None
 
@@ -39,23 +39,23 @@ def backtest(request, symbol, initial_investment):
         ma50 = calculate_moving_average(close_prices[:i + 1], 50)
         ma200 = calculate_moving_average(close_prices[:i + 1], 200)
 
-        # Estrategia de compra: Solo se compra si no se ha comprado recientemente
+        # Buying strategy: You only buy if you haven't bought recently
         if can_trade and ma50 and ma200 and holdings == 0 and data.close_price < ma50:
-            holdings = balance / data.close_price  # Comprar
+            holdings = balance / data.close_price  # buy
             balance = 0
             trade_count += 1
-            can_trade = False  # Bloquear más operaciones hasta que vendamos
+            can_trade = False  # Block more trades until we sell
             last_trade_action = 'buy'
 
-        # Estrategia de venta: Solo se vende si no se ha vendido recientemente
+        #  Selling strategy: Only selling if it hasn't sold recently
         elif can_trade and ma50 and ma200 and holdings > 0 and data.close_price > ma200:
-            balance = holdings * data.close_price  # Vender
+            balance = holdings * data.close_price  #sell
             holdings = 0
             trade_count += 1
-            can_trade = False  # Bloquear más operaciones hasta que compremos
+            can_trade = False  # Block more trades until we sell
             last_trade_action = 'sell'
 
-        # Desbloquear después de una operación opuesta
+        # Unlock after an opposite operation
         if last_trade_action == 'buy' and data.close_price > ma200:
             can_trade = True
         elif last_trade_action == 'sell' and data.close_price < ma50:
@@ -74,11 +74,11 @@ def backtest(request, symbol, initial_investment):
 
 
 def predict_stock(request, symbol):
-    """Función para predecir el precio de las acciones del símbolo dado para los próximos 30 días."""
+    """Function to predict the share price of the given symbol for the next 30 days."""
     try:
         predictions = predict_next_30_days(symbol)
 
-        # Convertir las fechas a formato ISO para JSON
+        # Convert Dates to ISO Format for JSON
         for prediction in predictions:
             prediction['date'] = prediction['date'].isoformat()
 
@@ -89,15 +89,15 @@ def predict_stock(request, symbol):
 
 
 
-# Función para entrenar el modelo
+# Ffunction for the model
 def train_ml_model(request, symbol):
     historical_data = StockData.objects.filter(symbol=symbol).order_by('timestamp')
 
     if not historical_data.exists():
-        return HttpResponse(f"No se encontraron datos históricos para {symbol}.", content_type="text/plain")
+        return HttpResponse(f"No historical data was found for {symbol}.", content_type="text/plain")
 
     train_model(historical_data)
-    return HttpResponse(f"Modelo entrenado para {symbol} con éxito.", content_type="text/plain")
+    return HttpResponse(f"train model for {symbol} with successfully.", content_type="text/plain")
 
 
 # Función para generar un informe en PDF
@@ -126,7 +126,7 @@ def generate_pdf_report(request, symbol):
     return response
 
 
-# Función para generar un informe en JSON
+# generate JSON 
 def generate_json_report(request, symbol):
     predictions = Prediction.objects.filter(symbol=symbol).order_by('date')
 
@@ -145,7 +145,7 @@ def generate_json_report(request, symbol):
     return HttpResponse(json.dumps(prediction_list), content_type='application/json')
 
 
-# Vista para generar el gráfico de precios históricos
+# View to generate the historical prices
 def plot_stock_prices(request, symbol):
     stock_data = StockData.objects.filter(symbol=symbol).order_by('timestamp')
 
@@ -174,6 +174,6 @@ def plot_stock_prices(request, symbol):
     return HttpResponse(buffer, content_type='image/png')
 
 
-# Página principal
+# main page
 def home(request):
     return render(request, 'myapp/home.html')

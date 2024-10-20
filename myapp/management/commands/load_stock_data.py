@@ -7,7 +7,7 @@ from datetime import datetime
 ALPHA_VANTAGE_API_KEY = os.getenv('DYIVABL5P6CM8OCQ')
 
 class Command(BaseCommand):
-    help = 'Cargar datos históricos desde Alpha Vantage'
+    help = 'Upload historical data from Alpha Vantage'
 
     def handle(self, *args, **kwargs):
         symbol = 'AAPL'
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         data = response.json()
 
         if "Time Series (Daily)" not in data:
-            self.stdout.write(self.style.ERROR("Error al obtener datos de Alpha Vantage"))
+            self.stdout.write(self.style.ERROR("Error to get datas Alpha Vantage"))
             return
 
         time_series = data['Time Series (Daily)']
@@ -33,7 +33,7 @@ class Command(BaseCommand):
             close_price = float(daily_data['4. close'])
             volume = int(daily_data['5. volume'])
 
-            # Guarda los datos en la base de datos
+            # saving info in db
             stock_data, created = StockData.objects.get_or_create(
                 symbol=symbol,
                 timestamp=timestamp,
@@ -47,8 +47,8 @@ class Command(BaseCommand):
             )
 
             if created:
-                self.stdout.write(self.style.SUCCESS(f'Dato para {timestamp} guardado con éxito'))
+                self.stdout.write(self.style.SUCCESS(f'data for {timestamp} saved'))
             else:
-                self.stdout.write(self.style.WARNING(f'Dato para {timestamp} ya existe'))
+                self.stdout.write(self.style.WARNING(f'data for {timestamp} alredy exists'))
 
-        self.stdout.write(self.style.SUCCESS(f'Datos cargados con éxito para {symbol}'))
+        self.stdout.write(self.style.SUCCESS(f'Successfully uploaded data for {symbol}'))
