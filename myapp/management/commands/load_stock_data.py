@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         symbol = 'AAPL'
-        self.stdout.write(self.style.SUCCESS(f'Cargando datos para {symbol}'))
+        self.stdout.write(self.style.SUCCESS(f'Uploading data for {symbol}'))
         
         # URL de Alpha Vantage (Time Series Daily)
         url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=full&apikey={ALPHA_VANTAGE_API_KEY}'
