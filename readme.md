@@ -70,12 +70,63 @@ Before running this project, ensure you have the following installed:
 - PostgreSQL
 - Alpha Vantage API Key (to fetch stock data)
 - Required Python packages (installed via `requirements.txt`)
+- 
+## Instructions to Run Locally:
+
+### Clone the project:
+To clone this repository to your local machine, run the following command:
+git clone https://github.com/your-username/backendsystem.git
+cd backendsystem
+
+#Set up environment variables:
+Create a .env file in the root of the project with the following environment variables:
+POSTGRES_DB=mydb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
+DJANGO_DEBUG=True
+ALLOWED_HOSTS=localhost
+
+## Build and run the project with Docker Compose:
+First, ensure you have Docker and Docker Compose installed. Then, run the following commands:
+docker-compose build
+docker-compose up
+
+Deployment Instructions:
+Deploying to AWS EC2:
+To deploy the project on an AWS EC2 instance, follow these steps:
+Set up an EC2 instance:
+Launch an EC2 instance with Ubuntu as the OS.
+Make sure to open port 8000 in the security group to access the application from the browser.
+Install Docker on the instance:
+
+## Connect to your EC2 instance via SSH:
+
+ssh -i backendpass.pem ubuntu@<your_ec2_ip>
+Install Docker and Docker Compose on the EC2 instance (refer to the official Docker documentation).
+Deploy the application:
+Use the following commands to clone the repository and deploy the application:
+git clone https://github.com/your-username/backendsystem.git
+cd backendsystem
+docker-compose up -d
+Access the application:
+
+## Once deployed, you can access the application at http://<your_ec2_ip>:8000.
+CI/CD with GitHub Actions:
+To set up automatic deployment using GitHub Actions:
+
+## Go to your repository on GitHub > Settings > Secrets.
+Create the following secrets:
+DOCKER_USERNAME: Your Docker Hub username.
+DOCKER_PASSWORD: Your Docker Hub password or access token.
+AWS_SSH_PRIVATE_KEY: The private SSH key (.pem) for accessing your EC2 instance.
+AWS_EC2_IP: The public IP address of your EC2 instance.
+
 
 ## command to run server 
 python manage.py runserver 
-
-## command to run docker 
-docker-compose up --build
 
 #migrate to databases, apply Django migrations
 docker-compose exec web python manage.py migrate
@@ -103,6 +154,15 @@ docker-compose exec web python manage.py migrate
 ## upload historical dates
 docker-compose exec web python manage.py load_stock_data
 
+## Useful Commands:
+## For migrations:
+docker-compose exec web python manage.py migrate
+## To load stock data:
+docker-compose exec web python manage.py load_stock_data
+## To train the machine learning model:
+docker-compose exec web python manage.py train_ml_model <symbol>
+Replace <symbol> with the stock symbol you want to train (e.g., AAPL).
+
 
 ## command to run model APPL
 docker-compose exec web python manage.py train_ml_model AAPL
@@ -122,7 +182,7 @@ Generación de reportes: http://localhost:8000/report/AAPL/
 Reporte en JSON: http://localhost:8000/report/json/AAPL/
 
 
-## reiniciar server docker : 
+## Restart Server Docker :
 docker-compose down
 docker-compose up --build
 docker-compose ps
