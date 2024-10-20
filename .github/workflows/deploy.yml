@@ -24,6 +24,6 @@ jobs:
       # Step 3: Deploy to AWS EC2
       - name: Deploy to AWS EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@98.80.250.179 'docker pullDOCKER_USERsabrinadev/myproject && docker-compose up -d'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@98.80.250.179 'docker pull DOCKER_USER/myproject && docker-compose up -d'
 
 
